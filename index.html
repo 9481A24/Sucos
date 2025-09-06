@@ -2,29 +2,25 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Gerador de Etiqueta Completo</title>
+<title>Gerador de Etiquetas - Spiriluna Sucos</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    background-color: #f0f0f0;
-  }
+  body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f0f0; }
   .input-group { margin-bottom: 10px; }
   label { font-weight: bold; }
   input, textarea { width: 100%; padding: 5px; margin-top: 3px; box-sizing: border-box; }
   button { background-color: #2E8B57; color: white; border: none; padding: 10px 20px; cursor: pointer; margin-top: 10px; border-radius: 5px; }
-  .etiqueta { width: 250px; background-color: #ffffff; border: 2px solid #2E8B57; border-radius: 8px; padding: 10px; margin-top: 20px; box-sizing: border-box; color: #333; position: relative; }
+  .etiqueta { width: 250px; background-color: #fff; border: 2px solid #2E8B57; border-radius: 8px; padding: 10px; margin: 10px; display:inline-block; vertical-align:top; color:#333; position: relative; }
   .titulo { font-size: 16px; font-weight: bold; text-align: center; color: #2E8B57; }
   .subtitulo { font-size: 12px; text-align: center; margin-bottom: 8px; }
   .section { font-size: 10px; margin-bottom: 4px; }
   .nutri { font-size: 9px; margin-top: 4px; }
-  .anvisa { font-weight: bold; color: #2E8B57; text-align: center; margin-top:10px; margin-bottom:10px; font-size:10px; }
+  .anvisa { font-weight: bold; color: #2E8B57; text-align: center; margin-top:10px; margin-bottom:10px; font-size:10px;}
   .qr-code { width: 60px; height: 60px; position: absolute; bottom: 10px; right: 10px; }
 </style>
 </head>
 <body>
 
-<h2>Gerador de Etiqueta de Suco - Spiriluna Sucos</h2>
+<h2>Gerador de Etiquetas - Spiriluna Sucos</h2>
 
 <div class="input-group">
   <label>Nome do Produto:</label>
@@ -48,17 +44,12 @@
 
 <div class="input-group">
   <label>Fabricação:</label>
-  <input type="text" id="fabricacao" value="06/09/2025">
+  <input type="date" id="fabricacao" value="2025-09-06">
 </div>
 
 <div class="input-group">
   <label>Validade:</label>
   <input type="text" id="validade" value="Consumir até 09/09/2025">
-</div>
-
-<div class="input-group">
-  <label>Lote:</label>
-  <input type="text" id="lote" value="001">
 </div>
 
 <div class="input-group">
@@ -75,44 +66,56 @@ Fibras: 0,5 g</textarea>
   <input type="text" id="contato" value="https://wa.me/5532995439612">
 </div>
 
-<button onclick="gerarEtiqueta()">Gerar Etiqueta</button>
+<div class="input-group">
+  <label>Quantidade de etiquetas:</label>
+  <input type="number" id="quantidade" value="10" min="1" max="1000">
+</div>
+
+<button onclick="gerarEtiquetas()">Gerar Etiquetas</button>
 
 <div id="resultado"></div>
 
 <script>
-function gerarEtiqueta() {
+function gerarEtiquetas() {
   const nome = document.getElementById('nomeProduto').value;
   const sub = document.getElementById('subTitulo').value;
   const ing = document.getElementById('ingredientes').value;
   const vol = document.getElementById('volume').value;
-  const fab = document.getElementById('fabricacao').value;
+  const fabDate = new Date(document.getElementById('fabricacao').value);
   const val = document.getElementById('validade').value;
-  const lote = document.getElementById('lote').value;
   const nutri = document.getElementById('nutri').value.replace(/\n/g,"<br>");
   const contato = document.getElementById('contato').value;
+  const qtd = parseInt(document.getElementById('quantidade').value);
 
-  const etiquetaHTML = `
-  <div class="etiqueta">
-    <div class="titulo">${nome}</div>
-    <div class="subtitulo">${sub}</div>
-    <div class="section"><strong>Ingredientes:</strong> ${ing}</div>
-    <div class="section"><strong>Volume:</strong> ${vol}</div>
-    <div class="section"><strong>Fabricação:</strong> ${fab}</div>
-    <div class="section"><strong>Validade:</strong> ${val}</div>
-    <div class="section"><strong>Lote:</strong> ${lote}</div>
-    <div class="section">Manter refrigerado entre 2°C e 8°C. Agitar antes de consumir.</div>
-    <div class="section"><strong>Produzido por:</strong> Spiriluna Sucos</div>
-    <div class="section"><strong>Endereço:</strong> Rua Exemplo, Belo Horizonte, MG</div>
-    <div class="section"><strong>CNPJ/CPF:</strong> 00.000.000/0001-00</div>
-    <div class="section"><strong>Contato:</strong> ${contato}</div>
-    <div class="nutri"><strong>Informações nutricionais (por 100 ml):</strong><br>${nutri}</div>
-    <div class="anvisa">Produzido em conformidade com a ANVISA – BPF aprovado</div>
-    <div class="qr-code">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(contato)}" alt="QR Code">
+  const dia = String(fabDate.getDate()).padStart(2,'0');
+  const mes = String(fabDate.getMonth()+1).padStart(2,'0');
+
+  let html = '';
+  for (let i=1; i<=qtd; i++) {
+    const lote = `B-${dia}${mes}-${String(i).padStart(3,'0')}`;
+    html += `
+    <div class="etiqueta">
+      <div class="titulo">${nome}</div>
+      <div class="subtitulo">${sub}</div>
+      <div class="section"><strong>Ingredientes:</strong> ${ing}</div>
+      <div class="section"><strong>Volume:</strong> ${vol}</div>
+      <div class="section"><strong>Fabricação:</strong> ${dia}/${mes}/${fabDate.getFullYear()}</div>
+      <div class="section"><strong>Validade:</strong> ${val}</div>
+      <div class="section"><strong>Lote:</strong> ${lote}</div>
+      <div class="section">Manter refrigerado entre 2°C e 8°C. Agitar antes de consumir.</div>
+      <div class="section"><strong>Produzido por:</strong> Spiriluna Sucos</div>
+      <div class="section"><strong>Endereço:</strong> Rua Exemplo, Belo Horizonte, MG</div>
+      <div class="section"><strong>CNPJ/CPF:</strong> 00.000.000/0001-00</div>
+      <div class="section"><strong>Contato:</strong> ${contato}</div>
+      <div class="nutri"><strong>Informações nutricionais (por 100 ml):</strong><br>${nutri}</div>
+      <div class="anvisa">Produzido em conformidade com a ANVISA – BPF aprovado</div>
+      <div class="qr-code">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(contato)}" alt="QR Code">
+      </div>
     </div>
-  </div>
-  `;
-  document.getElementById('resultado').innerHTML = etiquetaHTML;
+    `;
+  }
+  document.getElementById('resultado').innerHTML = html;
 }
 </script>
 
